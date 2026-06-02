@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,10 +24,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-5_=0*-zk2#hdtk)^av)-j2)_a4q=v9f!fp3#kc-im0j1--#0hk'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', cast=bool)
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['https://*.railway.app',]
 
 # Application definition
 
@@ -41,8 +42,12 @@ INSTALLED_APPS = [
     'django_q'
 ]
 
+if DEBUG:
+    INSTALLED_APPS.append("whitenoise.runserver_nostatic")
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -125,6 +130,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+
 from django.contrib.messages import constants
 
 MESSAGE_TAGS = {
@@ -132,7 +139,6 @@ MESSAGE_TAGS = {
     constants.ERROR: 'bg-red-50 text-red-700'
 }
 
-from decouple import config
 OPENAI_API_KEY = config('OPENAI_API_KEY')
 
 Q_CLUSTER = {

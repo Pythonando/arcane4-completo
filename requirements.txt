@@ -9,3 +9,5 @@ python-decouple
 lancedb
 sqlalchemy
 tzlocal
+whitenoise
+gunicorn
